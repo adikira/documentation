@@ -1,0 +1,13 @@
+https://stackoverflow.com/questions/48668706/how-do-i-convert-an-armadillo-matrix-to-cube
+https://arma.sourceforge.net/docs.html#Cube
+
+The fastest way to construct such a cube is to use one of the advanced constructors. These allow you to directly create a new object from an arbitrary section of memory, even without copying any of the data. This is closest in spirit to the way NumPy does reshaping, in which a view of the original data is returned, rather than a copy.
+
+You'd use the constructor like so:
+
+// Assuming a is an arma::mat.
+int N = 4;
+arma::cube c(a.memptr(), N, a.n_rows / N, a.n_cols, false);
+This takes the memory directly from a, without copying, and uses it as c's data.
+
+Of course, this is fast, but dangerous. You are responsible for guaranteeing that the pointed-to memory is valid as long as c is around. This means that the lifetime of c must be strictly nested in the lifetime of a. This can be hard to ensure, especially when a and c are both created on the heap.
